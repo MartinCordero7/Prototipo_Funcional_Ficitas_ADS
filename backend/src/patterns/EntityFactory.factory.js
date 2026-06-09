@@ -89,6 +89,21 @@ class EntityFactory {
     if (missing.length) {
       throw new Error(`[Factory] Campos requeridos faltantes en Appointment: ${missing.join(", ")}`);
     }
+    // Validar que la fecha y hora no estén en el pasado
+    // Se espera `fecha` en formato YYYY-MM-DD y `hora` en formato HH:mm (o HH:mm:ss).
+    const fecha = String(data.fecha);
+    const hora = String(data.hora);
+    // Construir una cadena ISO local: YYYY-MM-DDTHH:mm[:ss]
+    const dateTimeString = `${fecha}T${hora}`;
+    const appointmentDate = new Date(dateTimeString);
+    if (isNaN(appointmentDate.getTime())) {
+      throw new Error("[Factory] Fecha/hora de cita inválida.");
+    }
+
+    const now = new Date();
+    if (appointmentDate.getTime() < now.getTime()) {
+      throw new Error("[Factory] No se pueden agendar citas en el pasado.");
+    }
   }
 }
 
