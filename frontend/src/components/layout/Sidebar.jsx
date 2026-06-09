@@ -18,7 +18,7 @@ export default function Sidebar() {
         <div style={{ display: "flex", alignItems: "center", gap: ".6rem" }}>
           <span style={{ fontSize: "1.6rem" }}>🏥</span>
           <div>
-            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1rem", color: "var(--clr-primary)" }}>MediCitas</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1rem", color: "var(--clr-primary)" }}>FiCitas</div>
             <div style={{ fontSize: ".7rem", color: "var(--clr-muted)" }}>Sistema de Agendación</div>
           </div>
         </div>
