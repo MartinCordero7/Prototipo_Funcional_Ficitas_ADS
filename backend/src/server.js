@@ -3,6 +3,7 @@ import cors from "cors";
 import patientRoutes     from "./routes/patientRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 import doctorRoutes      from "./routes/doctorRoutes.js";
+import authRoutes        from "./routes/authRoutes.js";
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
@@ -12,9 +13,11 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 // ── Rutas ──────────────────────────────────────────────────────────────────
+app.use("/api/auth",         authRoutes);
 app.use("/api/patients",     patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/doctors",      doctorRoutes);
+
 
 // Health check
 app.get("/api/health", (_req, res) => res.json({ status: "ok", timestamp: new Date().toISOString() }));

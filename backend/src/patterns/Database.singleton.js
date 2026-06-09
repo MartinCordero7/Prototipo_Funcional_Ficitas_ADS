@@ -16,6 +16,27 @@ class Database {
       { id: "doc-1", name: "Dra. Mónica Viteri", specialty: "Fisioterapia" },
     ];
 
+    // ── Usuarios del sistema ──────────────────────────────────────────────
+    this._users = [
+      {
+        id: "usr-1",
+        username: "admin",
+        password: "admin123",
+        role: "ADMINISTRADOR",
+        displayName: "Administrador",
+      },
+      {
+        id: "usr-2",
+        username: "ayudante",
+        password: "ayuda123",
+        role: "AYUDANTE",
+        displayName: "Ayudante",
+      },
+    ];
+
+    // Mapa de bloqueos: username → { failCount, lockedUntil }
+    this._loginAttempts = {};
+
     Database._instance = this;
     console.log("[Singleton] Base de datos inicializada — única instancia creada.");
   }
@@ -57,6 +78,34 @@ class Database {
   // --- Doctors ---
   getDoctors() { return this._doctors; }
   findDoctorById(id) { return this._doctors.find(d => d.id === id) || null; }
+
+  // --- Users & Auth ---
+  findUserByUsername(username) {
+    return this._users.find(u => u.username === username) || null;
+  }
+
+  getLoginAttempts(username) {
+    return this._loginAttempts[username] || { failCount: 0, lockedUntil: null };
+  }
+
+  recordFailedAttempt(username) {
+    const current = this.getLoginAttempts(username);
+    const newCount = (current.failCount || 0) + 1;
+    const lockedUntil = newCount >= 3 ? new Date(Date.now() + 10 * 60 * 1000) : current.lockedUntil;
+    this._loginAttempts[username] = { failCount: newCount, lockedUntil };
+    return this._loginAttempts[username];
+  }
+
+  resetLoginAttempts(username) {
+    this._loginAttempts[username] = { failCount: 0, lockedUntil: null };
+  }
+
+  changePassword(username, newPassword) {
+    const idx = this._users.findIndex(u => u.username === username);
+    if (idx === -1) return false;
+    this._users[idx].password = newPassword;
+    return true;
+  }
 }
 
 // Exportar la instancia singleton

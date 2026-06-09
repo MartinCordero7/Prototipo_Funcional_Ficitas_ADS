@@ -1,9 +1,11 @@
-import { useApp } from "../context/AppContext.jsx";
+import { useApp }  from "../context/AppContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const STATUS_COLOR = { pendiente: "#fd7e14", confirmada: "#198754", cancelada: "#dc3545", completada: "#0dcaf0" };
 
 export default function Dashboard() {
-  const { patients, appointments, doctors, loading } = useApp();
+  const { patients, appointments, doctors, loading, updateAppointment } = useApp();
+  const { role } = useAuth();
 
   if (loading) return <div className="loading-center"><div className="spinner" /></div>;
 
@@ -17,6 +19,12 @@ export default function Dashboard() {
   ];
 
   const recent = [...appointments].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+  const pending = appointments.filter(a => a.estado === "pendiente").sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+  const confirmAppt = async (id) => {
+    try { await updateAppointment(id, { estado: "confirmada" }); }
+    catch (err) { alert(err.message); }
+  };
 
   return (
     <div>
@@ -40,7 +48,63 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Recientes */}
+      {/* ── ADMINISTRADOR: Citas pendientes ──────────────────────────────────── */}
+      {role === "ADMINISTRADOR" && (
+        <div className="card" style={{ marginBottom: "1.5rem" }}>
+          <div className="card-header" style={{ background: "rgba(253,126,20,.06)" }}>
+            <span>⏳</span>
+            <span className="section-title" style={{ color: "var(--clr-warning)" }}>
+              Citas pendientes de revisión
+            </span>
+            <span style={{
+              marginLeft: "auto", background: "#fff3cd", color: "#856404",
+              borderRadius: 999, padding: ".18rem .65rem", fontSize: ".72rem", fontWeight: 700,
+            }}>
+              {pending.length} pendiente{pending.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="card-body" style={{ padding: 0 }}>
+            {pending.length === 0 ? (
+              <div className="empty-state">
+                <span>✅</span>No hay citas pendientes
+              </div>
+            ) : (
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Paciente</th><th>Doctor</th><th>Especialidad</th>
+                      <th>Fecha</th><th>Hora</th><th>Motivo</th><th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pending.map(a => (
+                      <tr key={a.id}>
+                        <td style={{ fontWeight: 600 }}>{a.patientName}</td>
+                        <td>{a.doctorName}</td>
+                        <td style={{ color: "var(--clr-muted)", fontSize: ".83rem" }}>{a.doctorSpecialty}</td>
+                        <td>{a.fecha}</td>
+                        <td>{a.hora}</td>
+                        <td style={{ color: "var(--clr-muted)", fontSize: ".83rem" }}>{a.motivo || "—"}</td>
+                        <td>
+                          <button
+                            className="btn btn-success btn-sm"
+                            onClick={() => confirmAppt(a.id)}
+                          >
+                            ✓ Confirmar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Recientes + Doctores */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
         {/* Últimas citas */}
         <div className="card">
@@ -103,3 +167,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
