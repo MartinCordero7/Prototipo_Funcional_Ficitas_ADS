@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useCallback } from "react";
 
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : "/api";
+
 const AuthContext = createContext(null);
 
 const SESSION_KEY = "ficitas_session";
@@ -25,7 +29,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(loadSession);
 
   const login = useCallback(async (username, password) => {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch(`${API_BASE}/auth/login`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ username, password }),
@@ -47,7 +51,7 @@ export function AuthProvider({ children }) {
 
   const changePassword = useCallback(async (currentPassword, newPassword) => {
     if (!user) throw new Error("No hay sesión activa.");
-    const res = await fetch("/api/auth/change-password", {
+    const res = await fetch(`${API_BASE}/auth/change-password`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify({ username: user.username, currentPassword, newPassword }),
