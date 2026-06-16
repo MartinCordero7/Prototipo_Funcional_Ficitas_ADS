@@ -1,4 +1,4 @@
-# 🏥 MediCitas — Sistema de Agendación de Citas Médicas
+# 🏥 Fi-Citas — Sistema de Agendación de Citas de Fisioterapia
 
 Sistema fullstack de agendación de citas implementado con **MVC**, **Singleton** y **Factory Method**.
 
