@@ -246,7 +246,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="login-footer">
-          MVC · Singleton · Factory &nbsp;|&nbsp; Patrones de diseño
+          Fi-Citas &copy; 2026
         </div>
       </div>
     </div>

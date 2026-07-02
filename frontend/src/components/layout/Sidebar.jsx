@@ -85,10 +85,6 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div style={{ padding: ".75rem 1rem", borderTop: "1px solid var(--clr-border)", display: "flex", flexDirection: "column", gap: ".5rem" }}>
-        <div style={{ fontSize: ".68rem", color: "var(--clr-muted)", lineHeight: 1.5, paddingBottom: ".35rem" }}>
-          <strong>MVC + Singleton + Factory</strong><br />
-          Patrones de diseño aplicados
-        </div>
         <button
           id="sidebar-logout-btn"
           className="btn btn-outline btn-sm"

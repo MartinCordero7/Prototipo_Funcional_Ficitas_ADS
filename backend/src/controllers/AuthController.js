@@ -1,11 +1,12 @@
-import database from "../patterns/Database.singleton.js";
+import User from "../schemas/User.schema.js";
 
-const MAX_ATTEMPTS  = 3;
-const LOCKOUT_MS    = 10 * 60 * 1000; // 10 minutos
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_MS   = 10 * 60 * 1000; // 10 minutos
 
 /**
  * CONTROLLER — Autenticación
  * Maneja login (con bloqueo por intentos) y cambio de contraseña.
+ * Los usuarios se leen y persisten en MongoDB (colección users).
  */
 const AuthController = {
 
@@ -13,57 +14,61 @@ const AuthController = {
    * POST /api/auth/login
    * Body: { username, password }
    */
-  login(req, res) {
+  async login(req, res) {
     const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ success: false, message: "Usuario y contraseña son requeridos." });
     }
 
-    const attempts = database.getLoginAttempts(username);
+    const user = await User.findOne({ username });
 
     // Verificar bloqueo activo
-    if (attempts.lockedUntil && new Date() < new Date(attempts.lockedUntil)) {
-      const remaining = Math.ceil((new Date(attempts.lockedUntil) - Date.now()) / 1000);
+    if (user && user.lockedUntil && new Date() < new Date(user.lockedUntil)) {
+      const remaining = Math.ceil((new Date(user.lockedUntil) - Date.now()) / 1000);
       return res.status(403).json({
         success:   false,
         locked:    true,
-        remaining, // segundos restantes
+        remaining,
         message:   `Cuenta bloqueada. Intente en ${Math.ceil(remaining / 60)} minuto(s).`,
       });
     }
 
-    // Si el bloqueo ya expiró, resetear
-    if (attempts.lockedUntil && new Date() >= new Date(attempts.lockedUntil)) {
-      database.resetLoginAttempts(username);
+    // Si el bloqueo ya expiró, resetear contadores
+    if (user && user.lockedUntil && new Date() >= new Date(user.lockedUntil)) {
+      await User.updateOne({ username }, { failCount: 0, lockedUntil: null });
+      user.failCount   = 0;
+      user.lockedUntil = null;
     }
 
-    const user = database.findUserByUsername(username);
-
-    // Credenciales incorrectas
+    // Credenciales incorrectas (usuario no existe o contraseña mal)
     if (!user || user.password !== password) {
-      const updated    = database.recordFailedAttempt(username);
-      const remaining  = MAX_ATTEMPTS - updated.failCount;
-      const nowLocked  = updated.failCount >= MAX_ATTEMPTS;
-
-      return res.status(401).json({
-        success:     false,
-        locked:      nowLocked,
-        attemptsLeft: nowLocked ? 0 : remaining,
-        remaining:    nowLocked ? LOCKOUT_MS / 1000 : null,
-        message:     nowLocked
-          ? "Cuenta bloqueada por 10 minutos tras demasiados intentos fallidos."
-          : `Credenciales incorrectas. Intentos restantes: ${remaining}.`,
-      });
+      if (user) {
+        const newCount    = (user.failCount || 0) + 1;
+        const lockedUntil = newCount >= MAX_ATTEMPTS ? new Date(Date.now() + LOCKOUT_MS) : null;
+        await User.updateOne({ username }, { failCount: newCount, lockedUntil });
+        const remaining  = MAX_ATTEMPTS - newCount;
+        const nowLocked  = newCount >= MAX_ATTEMPTS;
+        return res.status(401).json({
+          success:      false,
+          locked:       nowLocked,
+          attemptsLeft: nowLocked ? 0 : remaining,
+          remaining:    nowLocked ? LOCKOUT_MS / 1000 : null,
+          message:      nowLocked
+            ? "Cuenta bloqueada por 10 minutos tras demasiados intentos fallidos."
+            : `Credenciales incorrectas. Intentos restantes: ${remaining}.`,
+        });
+      }
+      return res.status(401).json({ success: false, message: "Credenciales incorrectas." });
     }
 
-    // Login exitoso
-    database.resetLoginAttempts(username);
+    // Login exitoso — resetear intentos
+    await User.updateOne({ username }, { failCount: 0, lockedUntil: null });
 
     return res.json({
       success: true,
       data: {
-        id:          user.id,
+        id:          user._id,
         username:    user.username,
         role:        user.role,
         displayName: user.displayName,
@@ -76,7 +81,7 @@ const AuthController = {
    * POST /api/auth/change-password
    * Body: { username, currentPassword, newPassword }
    */
-  changePassword(req, res) {
+  async changePassword(req, res) {
     const { username, currentPassword, newPassword } = req.body;
 
     if (!username || !currentPassword || !newPassword) {
@@ -87,12 +92,12 @@ const AuthController = {
       return res.status(400).json({ success: false, message: "La nueva contraseña debe tener al menos 6 caracteres." });
     }
 
-    const user = database.findUserByUsername(username);
+    const user = await User.findOne({ username });
     if (!user || user.password !== currentPassword) {
       return res.status(401).json({ success: false, message: "La contraseña actual es incorrecta." });
     }
 
-    database.changePassword(username, newPassword);
+    await User.updateOne({ username }, { password: newPassword });
     return res.json({ success: true, message: "Contraseña actualizada exitosamente." });
   },
 };

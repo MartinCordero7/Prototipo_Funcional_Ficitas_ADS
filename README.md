@@ -78,41 +78,6 @@ appointment-system/
 
 ---
 
-## 🏗️ Patrones de diseño
-
-### 🔒 Singleton — `Database.singleton.js`
-Garantiza que solo exista **una instancia** de la base de datos en memoria durante todo el ciclo de vida del servidor. Cualquier módulo que importe `database` recibe siempre el mismo objeto.
-
-```js
-class Database {
-  constructor() {
-    if (Database._instance) return Database._instance; // retorna instancia existente
-    this._patients = [];
-    Database._instance = this;
-  }
-}
-export default new Database(); // única exportación
-```
-
-### 🏭 Factory Method — `EntityFactory.factory.js`
-Define una interfaz común (`EntityFactory.create(type, data)`) para crear entidades. La lógica de qué clase instanciar queda encapsulada en el factory, no dispersa en los controladores.
-
-```js
-class EntityFactory {
-  static create(type, data) {
-    switch (type) {
-      case "patient":     return new Patient(data);
-      case "appointment": return new Appointment(data);
-    }
-  }
-}
-```
-
-### 🔒 Singleton (Frontend) — `NotificationStore.singleton.js`
-Una única instancia del store de notificaciones accesible desde cualquier componente React sin necesidad de prop drilling ni contexto adicional.
-
----
-
 ## 📡 API Endpoints
 
 | Método | Ruta                        | Descripción               |

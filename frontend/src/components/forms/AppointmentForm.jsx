@@ -8,7 +8,16 @@ function validate(form) {
   if (!form.patientId) errors.patientId = "Selecciona un paciente";
   if (!form.doctorId)  errors.doctorId  = "Selecciona un doctor";
   if (!form.fecha)     errors.fecha     = "Selecciona la fecha";
-  if (!form.hora)      errors.hora      = "Selecciona la hora";
+  if (!form.hora) {
+    errors.hora = "Selecciona la hora";
+  } else {
+    const [h, m] = form.hora.split(":");
+    const hour = parseInt(h, 10);
+    const min = parseInt(m, 10);
+    if (hour < 8 || hour > 18 || (hour === 18 && min > 0)) {
+      errors.hora = "El horario de atención es de 08:00 a 18:00";
+    }
+  }
   return errors;
 }
 
@@ -64,14 +73,14 @@ export default function AppointmentForm({ onClose, onSuccess }) {
         <Select name="patientId" label="Paciente *">
           <option value="">Seleccionar paciente…</option>
           {patients.map(p => (
-            <option key={p.id} value={p.id}>{p.nombre} {p.apellido}</option>
+            <option key={p._id} value={p._id}>{p.nombre} {p.apellido}</option>
           ))}
         </Select>
 
         <Select name="doctorId" label="Doctor *">
           <option value="">Seleccionar doctor…</option>
           {doctors.map(d => (
-            <option key={d.id} value={d.id}>{d.name} — {d.specialty}</option>
+            <option key={d._id} value={d._id}>{d.name} — {d.specialty}</option>
           ))}
         </Select>
 
@@ -83,7 +92,7 @@ export default function AppointmentForm({ onClose, onSuccess }) {
 
         <div className="form-group">
           <label className="form-label">Hora *</label>
-          <input className={`form-control${errors.hora ? " error" : ""}`} name="hora" type="time" value={form.hora} onChange={change} />
+          <input className={`form-control${errors.hora ? " error" : ""}`} name="hora" type="time" value={form.hora} onChange={change} min="08:00" max="18:00" />
           {errors.hora && <span className="form-error">{errors.hora}</span>}
         </div>
 

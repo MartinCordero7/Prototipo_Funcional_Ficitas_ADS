@@ -40,7 +40,7 @@ export function AppProvider({ children }) {
 
   const deletePatient = async (id) => {
     await patientService.delete(id);
-    setPatients(prev => prev.filter(p => p.id !== id));
+    setPatients(prev => prev.filter(p => p._id !== id));
     notificationStore.success("Paciente eliminado.");
   };
 
@@ -54,14 +54,14 @@ export function AppProvider({ children }) {
 
   const updateAppointment = async (id, data) => {
     const res = await appointmentService.update(id, data);
-    setAppointments(prev => prev.map(a => a.id === id ? res.data : a));
+    setAppointments(prev => prev.map(a => a._id === id ? res.data : a));
     notificationStore.success("Cita actualizada.");
     return res.data;
   };
 
   const deleteAppointment = async (id) => {
     await appointmentService.delete(id);
-    setAppointments(prev => prev.filter(a => a.id !== id));
+    setAppointments(prev => prev.filter(a => a._id !== id));
     notificationStore.success("Cita cancelada.");
   };
 

@@ -1,16 +1,16 @@
-import database from "../patterns/Database.singleton.js";
+import Doctor from "../schemas/Doctor.schema.js";
 
 /**
  * MODEL — Doctor
- * Acceso de solo lectura a la lista de médicos.
+ * Acceso de solo lectura a la lista de médicos (MongoDB).
  */
 class DoctorModel {
-  getAll() {
-    return database.getDoctors();
+  async getAll() {
+    return Doctor.find().sort({ name: 1 });
   }
 
-  getById(id) {
-    const doctor = database.findDoctorById(id);
+  async getById(id) {
+    const doctor = await Doctor.findById(id);
     if (!doctor) throw new Error(`Doctor con id "${id}" no encontrado.`);
     return doctor;
   }

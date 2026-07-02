@@ -89,7 +89,7 @@ export default function Dashboard() {
                         <td>
                           <button
                             className="btn btn-success btn-sm"
-                            onClick={() => confirmAppt(a.id)}
+                            onClick={() => confirmAppt(a._id)}
                           >
                             ✓ Confirmar
                           </button>
@@ -154,16 +154,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pattern info banner */}
-      <div style={{ marginTop: "1.5rem", background: "rgba(13,110,253,.06)", border: "1.5px solid rgba(13,110,253,.15)", borderRadius: "var(--radius-lg)", padding: "1.25rem 1.5rem" }}>
-        <div style={{ fontWeight: 700, marginBottom: ".5rem", color: "var(--clr-primary)" }}>🏗️ Patrones de diseño implementados</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem", fontSize: ".875rem" }}>
-          <div><strong>🔒 Singleton (Backend)</strong> — Una única instancia de la base de datos en memoria garantiza consistencia global.</div>
-          <div><strong>🏭 Factory Method (Backend)</strong> — EntityFactory.create() decide qué clase instanciar (Patient | Appointment) según el tipo.</div>
-          <div><strong>🔒 Singleton (Frontend)</strong> — NotificationStore garantiza un único canal de notificaciones para toda la app.</div>
-          <div><strong>🗂️ MVC</strong> — Routes → Controllers → Models con separación clara de responsabilidades.</div>
-        </div>
-      </div>
+
     </div>
   );
 }

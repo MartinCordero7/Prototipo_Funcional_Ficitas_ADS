@@ -3,7 +3,7 @@ import { useApp } from "../../context/AppContext.jsx";
 
 const INITIAL = {
   nombre: "", apellido: "", edad: "", peso: "", estatura: "",
-  historialMedico: "", sexo: "", ocupacion: "",
+  historialMedico: "", sexo: "", ocupacion: "", telefono: "",
 };
 
 const SEXO_OPTIONS = ["Masculino", "Femenino", "Otro", "Prefiero no decir"];
@@ -101,6 +101,15 @@ export default function PatientForm({ onClose, onSuccess }) {
             {errors.sexo && <span className="form-error">{errors.sexo}</span>}
           </div>
           <Field name="ocupacion" label="Ocupación *" value={form.ocupacion} onChange={change} error={errors.ocupacion} placeholder="Ej: Ingeniero" />
+          <Field
+            name="telefono"
+            label="Teléfono WhatsApp"
+            type="tel"
+            value={form.telefono}
+            onChange={change}
+            error={errors.telefono}
+            placeholder="+593XXXXXXXXX"
+          />
         </div>
       </div>
 

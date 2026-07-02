@@ -62,7 +62,7 @@ export default function Patients() {
               </thead>
               <tbody>
                 {filtered.map(p => (
-                  <tr key={p.id}>
+                  <tr key={p._id}>
                     <td>
                       <div style={{ fontWeight: 600 }}>{p.nombre} {p.apellido}</div>
                       {p.historialMedico && (
@@ -76,13 +76,15 @@ export default function Patients() {
                     <td>{p.peso} kg</td>
                     <td>{p.estatura} cm</td>
                     <td>
-                      <span style={{ fontWeight: 600, color: "var(--clr-primary)" }}>{p.imc}</span>
+                      <span style={{ fontWeight: 600, color: "var(--clr-primary)" }}>
+                        {p.estatura > 0 ? (p.peso / Math.pow(p.estatura / 100, 2)).toFixed(1) : "—"}
+                      </span>
                     </td>
                     <td>{p.ocupacion}</td>
                     <td>
                       <div style={{ display: "flex", gap: ".4rem" }}>
                         <button className="btn btn-outline btn-sm" onClick={() => setSelected(p)}>Ver</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id, p.nombre + " " + p.apellido)}>✕</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p._id, p.nombre + " " + p.apellido)}>✕</button>
                       </div>
                     </td>
                   </tr>
@@ -109,8 +111,9 @@ export default function Patients() {
               ["Sexo", selected.sexo],
               ["Peso", `${selected.peso} kg`],
               ["Estatura", `${selected.estatura} cm`],
-              ["IMC", selected.imc],
+              ["IMC", selected.estatura > 0 ? (selected.peso / Math.pow(selected.estatura / 100, 2)).toFixed(1) : "—"],
               ["Ocupación", selected.ocupacion],
+              ["Teléfono WA", selected.telefono || "—"],
             ].map(([k, v]) => (
               <div key={k}>
                 <div style={{ fontSize: ".75rem", fontWeight: 700, color: "var(--clr-muted)", textTransform: "uppercase", marginBottom: ".2rem" }}>{k}</div>

@@ -82,7 +82,7 @@ export default function Appointments() {
               </thead>
               <tbody>
                 {filtered.map(a => (
-                  <tr key={a.id}>
+                  <tr key={a._id}>
                     <td style={{ fontWeight: 600 }}>{a.patientName}</td>
                     <td>{a.doctorName}</td>
                     <td style={{ color: "var(--clr-muted)", fontSize: ".83rem" }}>{a.doctorSpecialty}</td>
@@ -93,12 +93,12 @@ export default function Appointments() {
                     <td>
                       <div style={{ display: "flex", gap: ".35rem", flexWrap: "wrap" }}>
                         {a.estado === "pendiente" && (
-                          <button className="btn btn-success btn-sm" onClick={() => changeStatus(a.id, "confirmada")}>✓</button>
+                          <button className="btn btn-success btn-sm" onClick={() => changeStatus(a._id, "confirmada")}>✓</button>
                         )}
                         {a.estado === "confirmada" && (
-                          <button className="btn btn-outline btn-sm" onClick={() => changeStatus(a.id, "completada")}>Completar</button>
+                          <button className="btn btn-outline btn-sm" onClick={() => changeStatus(a._id, "completada")}>Completar</button>
                         )}
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a.id)}>✕</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a._id)}>✕</button>
                       </div>
                     </td>
                   </tr>
