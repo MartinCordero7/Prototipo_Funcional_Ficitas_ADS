@@ -5,6 +5,7 @@ import {
   sendAppointmentCreated,
   sendAppointmentConfirmed,
   sendAppointmentCancelled,
+  sendAppointmentCompleted,
 } from "../services/whatsapp.service.js";
 
 /**
@@ -102,6 +103,12 @@ class AppointmentModel {
           patientName: name,
           fecha:       before.fecha,
           hora:        before.hora,
+        });
+      } else if (data.estado === "completada") {
+        sendAppointmentCompleted({
+          telefono:    tel,
+          patientName: name,
+          doctorName:  before.doctorName,
         });
       }
     }

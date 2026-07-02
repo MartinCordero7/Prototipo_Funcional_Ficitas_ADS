@@ -91,14 +91,19 @@ export default function Appointments() {
                     <td style={{ color: "var(--clr-muted)", fontSize: ".83rem" }}>{a.motivo || "—"}</td>
                     <td><span className={`badge badge-${a.estado}`}>{a.estado}</span></td>
                     <td>
-                      <div style={{ display: "flex", gap: ".35rem", flexWrap: "wrap" }}>
-                        {a.estado === "pendiente" && (
-                          <button className="btn btn-success btn-sm" onClick={() => changeStatus(a._id, "confirmada")}>✓</button>
-                        )}
-                        {a.estado === "confirmada" && (
-                          <button className="btn btn-outline btn-sm" onClick={() => changeStatus(a._id, "completada")}>Completar</button>
-                        )}
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(a._id)}>✕</button>
+                      <div style={{ display: "flex", gap: ".5rem", flexWrap: "wrap", alignItems: "center" }}>
+                        <select 
+                          className="form-control" 
+                          style={{ padding: ".25rem .5rem", fontSize: ".8rem", width: "auto" }}
+                          value={a.estado}
+                          onChange={(e) => changeStatus(a._id, e.target.value)}
+                        >
+                          <option value="pendiente">Pendiente</option>
+                          <option value="confirmada">Confirmada</option>
+                          <option value="completada">Completada</option>
+                          <option value="cancelada">Cancelada</option>
+                        </select>
+                        <button className="btn btn-danger btn-sm" title="Eliminar registro" onClick={() => handleDelete(a._id)}>🗑️</button>
                       </div>
                     </td>
                   </tr>

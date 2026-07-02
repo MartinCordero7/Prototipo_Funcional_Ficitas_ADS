@@ -104,3 +104,15 @@ export async function sendAppointmentCancelled({ telefono, patientName, fecha, h
 
   await sendMessage(telefono, message);
 }
+
+/**
+ * Notificación al completar una cita.
+ */
+export async function sendAppointmentCompleted({ telefono, patientName, doctorName }) {
+  const message =
+    `🏥 *Fi-Citas — Cita Completada*\n\n` +
+    `Hola, *${patientName}*. Tu cita con el/la Dr/a. *${doctorName}* ha concluido con éxito.\n\n` +
+    `¡Gracias por confiar en nosotros!`;
+
+  await sendMessage(telefono, message);
+}
