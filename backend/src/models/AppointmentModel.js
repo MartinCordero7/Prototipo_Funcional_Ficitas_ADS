@@ -6,6 +6,7 @@ import {
   sendAppointmentConfirmed,
   sendAppointmentCancelled,
   sendAppointmentCompleted,
+  sendAppointmentRescheduled,
 } from "../services/whatsapp.service.js";
 
 /**
@@ -108,6 +109,14 @@ class AppointmentModel {
         sendAppointmentCompleted({
           telefono:    tel,
           patientName: name,
+          doctorName:  before.doctorName,
+        });
+      } else if (data.estado === "reprogramada") {
+        sendAppointmentRescheduled({
+          telefono:    tel,
+          patientName: name,
+          fecha:       data.fecha || before.fecha,
+          hora:        data.hora || before.hora,
           doctorName:  before.doctorName,
         });
       }

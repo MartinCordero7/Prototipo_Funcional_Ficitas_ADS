@@ -3,11 +3,12 @@ import { useApp } from "../context/AppContext.jsx";
 import Modal from "../components/shared/Modal.jsx";
 import AppointmentForm from "../components/forms/AppointmentForm.jsx";
 
-const ESTADOS = ["todos", "pendiente", "confirmada", "cancelada", "completada"];
+const ESTADOS = ["todos", "pendiente", "confirmada", "cancelada", "completada", "reprogramada"];
 
 export default function Appointments() {
   const { appointments, updateAppointment, deleteAppointment, loading } = useApp();
   const [showForm, setShowForm]   = useState(false);
+  const [rescheduleAppt, setRescheduleAppt] = useState(null);
   const [filter,   setFilter]     = useState("todos");
   const [search,   setSearch]     = useState("");
 
@@ -18,8 +19,27 @@ export default function Appointments() {
   });
 
   const changeStatus = async (id, newEstado) => {
+    if (newEstado === "reprogramada") {
+      setRescheduleAppt(appointments.find(a => a._id === id));
+      return;
+    }
     try { await updateAppointment(id, { estado: newEstado }); }
     catch (err) { alert(err.message); }
+  };
+
+  const handleRescheduleSubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    try {
+      await updateAppointment(rescheduleAppt._id, { 
+        estado: "reprogramada", 
+        fecha: fd.get("fecha"), 
+        hora: fd.get("hora") 
+      });
+      setRescheduleAppt(null);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -101,6 +121,7 @@ export default function Appointments() {
                           <option value="pendiente">Pendiente</option>
                           <option value="confirmada">Confirmada</option>
                           <option value="completada">Completada</option>
+                          <option value="reprogramada">Reprogramada</option>
                           <option value="cancelada">Cancelada</option>
                         </select>
                         <button className="btn btn-danger btn-sm" title="Eliminar registro" onClick={() => handleDelete(a._id)}>🗑️</button>
@@ -117,6 +138,25 @@ export default function Appointments() {
       {showForm && (
         <Modal title="Agendar nueva cita" onClose={() => setShowForm(false)}>
           <AppointmentForm onClose={() => setShowForm(false)} />
+        </Modal>
+      )}
+
+      {rescheduleAppt && (
+        <Modal title="Reprogramar cita" onClose={() => setRescheduleAppt(null)}>
+          <form onSubmit={handleRescheduleSubmit}>
+            <div className="form-group" style={{ marginBottom: "1rem" }}>
+              <label className="form-label">Nueva Fecha</label>
+              <input type="date" name="fecha" className="form-control" defaultValue={rescheduleAppt.fecha} required />
+            </div>
+            <div className="form-group" style={{ marginBottom: "1.5rem" }}>
+              <label className="form-label">Nueva Hora (8:00 AM - 18:00 PM)</label>
+              <input type="time" name="hora" className="form-control" defaultValue={rescheduleAppt.hora} required min="08:00" max="18:00" />
+            </div>
+            <div className="form-actions">
+              <button type="button" className="btn btn-outline" onClick={() => setRescheduleAppt(null)}>Cancelar</button>
+              <button type="submit" className="btn btn-primary">Reprogramar</button>
+            </div>
+          </form>
         </Modal>
       )}
     </div>

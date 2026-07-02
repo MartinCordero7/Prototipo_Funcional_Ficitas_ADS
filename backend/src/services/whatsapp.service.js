@@ -116,3 +116,18 @@ export async function sendAppointmentCompleted({ telefono, patientName, doctorNa
 
   await sendMessage(telefono, message);
 }
+
+/**
+ * Notificación al reprogramar una cita.
+ */
+export async function sendAppointmentRescheduled({ telefono, patientName, fecha, hora, doctorName }) {
+  const message =
+    `🔄 *Fi-Citas — Cita Reprogramada*\n\n` +
+    `Hola, *${patientName}*. Tu cita ha sido *reprogramada* exitosamente.\n\n` +
+    `📅 Nueva Fecha: *${fecha}*\n` +
+    `⏰ Nueva Hora: *${hora}*\n` +
+    `👨‍⚕️ Doctor: *${doctorName}*\n\n` +
+    `¡Te esperamos!`;
+
+  await sendMessage(telefono, message);
+}
