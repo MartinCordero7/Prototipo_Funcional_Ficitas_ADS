@@ -152,9 +152,31 @@ h1, h2, h3 { font-family: var(--font-display); }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-center { display: flex; justify-content: center; padding: 3rem; }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+  .page-wrapper { flex-direction: column; }
+  aside { 
+    width: 100% !important; 
+    min-height: auto !important; 
+    border-right: none !important; 
+    border-bottom: 1px solid var(--clr-border) !important; 
+    padding: 1rem !important; 
+  }
+  aside > div:first-child { padding: 0 0 1rem 0 !important; }
+  aside > nav { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 0.5rem; 
+    padding: 1rem 0 0 0 !important;
+  }
+  aside > nav > a { 
+    flex: 1; 
+    justify-content: center; 
+    margin-bottom: 0 !important; 
+    min-width: max-content;
+  }
   .main-content { padding: 1rem; }
   .form-grid { grid-template-columns: 1fr; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
 }
 
 /* ── Login page ─────────────────────────────────────────────────────────── */
